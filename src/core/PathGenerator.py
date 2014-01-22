@@ -143,6 +143,11 @@ class ManualPathGenerator(PathGenerator):
       
       code.append(ins)
       print "(%.4d)" % counter, ins
+      #print ins.getCond()
+      # if not (UndefinedOp("",1) in ins.getOperands()):
+      #   print ins.getCond()
+      # else:
+      #   print ""
       counter = counter + 1
       if counter == self.max_count:
         break

@@ -20,7 +20,7 @@
 
 from core import *
 
-from SSA import SSA
+#from SSA import SSA
 from Condition   import *
 from SMT         import SMT
 
@@ -30,12 +30,12 @@ def getValueFromCode(inss, initial_values, op):
   # code should be copied and reversed
   inss.reverse()
   
-  ssa = SSA()
+  ssa = None#SSA()
   smt_conds  = SMT()
  
   # we will track op
   mvars = set([op])    
-  ssa.getMap(mvars, set(), set())
+  #ssa.getMap(mvars, set(), set())
 
   for ins in inss:
 
@@ -43,18 +43,37 @@ def getValueFromCode(inss, initial_values, op):
     ins_write_vars = set(ins.getWriteVarOperands())
     ins_read_vars = set(ins.getReadVarOperands())
 
+    print "write vars:"
+    for v in ins_write_vars:
+      print v,
+    print "\nread vars:"
+    for v in ins_read_vars:
+      print v,
+    print "\nmvars:"
+    for v in mvars:
+      print v,
+    print ""
+
+
     if len(ins_write_vars.intersection(mvars)) > 0: 
       
-      ssa_map = ssa.getMap(ins_read_vars.difference(mvars), ins_write_vars, ins_read_vars.intersection(mvars))
+      #ssa_map = ssa.getMap(ins_read_vars.difference(mvars), ins_write_vars, ins_read_vars.intersection(mvars))
 
-      cons = conds.get(ins.instruction, Condition)
-      condition = cons(ins, ssa_map)
+      #print ssa_map
+      #print ins.getCond()
+      #assert(0)
+
+      #cons = ins.getCond()
+      #condition = cons(ins, ssa_map)
      
       mvars = mvars.difference(ins_write_vars) 
       mvars = ins_read_vars.union(mvars)
-      mvars = set(filter(lambda o: o.name <> "ebp", mvars))
+
+      #mvars = set(filter(lambda o: o.name <> "ebp", mvars))
+      conds = ins.getCond()
+      print conds
    
-      smt_conds.add(condition.getEq())
+      smt_conds.add(conds)
       
   for iop in initial_values.keys():
     if not (iop in ssa):
@@ -78,7 +97,7 @@ def getValueFromCode(inss, initial_values, op):
 
 
 class Callstack:
-  def __init__(self, reil_code):
+  def __init__(self, code):
     
     # The first instruction should be a call
     self.callstack = [None]
@@ -89,18 +108,18 @@ class Callstack:
     # aditional information need to compute the callstack
     self.calls = [None]
     self.esp_diffs = [None]
-    self.reil_code = reil_code
-    reil_size = len(reil_code)
+    self.code = code
+    code_size = len(code)
     start = 0  
   
-    for (end,ins) in enumerate(self.reil_code):
+    for (end,ins) in enumerate(self.code):
       if (ins.isCall() and ins.called_function == None) or ins.isRet():
-        self.__getStackDiff__(ins, reil_code[start:end])
+        self.__getStackDiff__(ins, code[start:end])
         start = end
         
-    if (start <> reil_size-1):
-      ins = reil_code[start]
-      self.__getStackDiff__(ins, reil_code[start:reil_size-1])
+    if (start <> code_size-1):
+      ins = code[start]
+      self.__getStackDiff__(ins, code[start:code_size-1])
       
     self.index = len(self.callstack) - 1
   
@@ -182,9 +201,9 @@ class Callstack:
     return Operand(name,"BYTE", mem_source, mem_offset)
   
   def __getStackDiff__(self, ins, reil_code):
-    addr = ins.address
+    addr = ins.address.getValue()
     if ins.isCall():
-      call = int(addr, 16)
+      call = addr
       esp_diff = self.__getESPdifference__(reil_code, 0) 
         
       self.calls.append(call)
@@ -212,6 +231,6 @@ class Callstack:
   def __getESPdifference__(self, reil_code, initial_esp):
     if len(reil_code) == 0:
       return initial_esp
-    esp_op = RegOp("esp","DWORD")
+    esp_op = RegOp("R_ESP","DWORD")
     initial_values = dict([ (esp_op, ImmOp(str(0), "DWORD"))])
     return getValueFromCode(reil_code, initial_values, esp_op)+ initial_esp

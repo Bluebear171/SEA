@@ -178,15 +178,15 @@ def generatePaths(program, start, end, n):
     
     path.reset()
     trace = mkTrace(path, [], False)
-    path.reset()
-    fvars, sol = getPathConditions(trace, False)
+    #path.reset()
+    #fvars, sol = getPathConditions(trace, False)
 
-    if sol <> None:
-      print "SAT!"
-      for var in fvars:
-        print "sol["+str(var)+"] =", sol[var]
-    else:
-      print "UNSAT!"
+    #if sol <> None:
+    #  print "SAT!"
+    #  for var in fvars:
+    #    print "sol["+str(var)+"] =", sol[var]
+    #else:
+    #  print "UNSAT!"
       #if not (str(labels) in path_set):
       #  path_set.add(str(labels))
       #  csv_writer.writerow(labels)

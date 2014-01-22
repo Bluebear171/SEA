@@ -16,7 +16,8 @@
 
     Copyright 2013 by neuromancer
 """
-from core import *
+#from core import *
+#from Operand import *
 
 class SSA:
   def __init__(self):
@@ -26,6 +27,7 @@ class SSA:
     return str(op) in self.regs
   
   def getMap(self, read_ops, write_ops, other_ops):
+    print self.regs.items()
     d = dict()
     
     read_ops  = filter(lambda o: not o.isMem(), read_ops)

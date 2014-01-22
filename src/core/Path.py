@@ -53,11 +53,13 @@ class Path:
     self.len = self.last - self.first 
 
     self.is_reversed = is_reversed
-    
-    if (self.is_reversed):
-      self.current = self.last
-    else:
-      self.current = first
+
+    # add reset and remove following code
+    self.reset()
+    #if (self.is_reversed):
+    #  self.current = self.last
+    #else:
+    #  self.current = first
 
   def __iter__(self):
     """Returns the iterator of the path"""
@@ -101,6 +103,11 @@ class Path:
         
   def reset(self):
     """Resets the path to the first or the last instruction, depending if the path is reversed"""
+
+    self.var_map = dict()
+
+    for ins in self.code:
+      ins.setVarMap(self.var_map)
 
     if (self.is_reversed):
       self.current = self.last

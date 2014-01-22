@@ -1,7 +1,8 @@
+
 """
    Copyright (c) 2013 neuromancer
    All rights reserved.
-   
+
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
@@ -25,20 +26,61 @@
    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from Path       import Path
-from Program    import Program
-from Operand    import *
-from Types      import *
-from Lattice    import *
-from Reil       import ReilParser#, ReilInstruction
-from BapInstruction        import BapParser#, BapInstruction
+import sys
+from Operand import *
 
-ReilProgram = lambda trace_filename: Program(trace_filename,ReilParser) 
-ReilPath    = lambda trace_filename,first,last: Path(first, last, filename = trace_filename, parser = ReilParser)
-AbsPath     = lambda first, last,code: Path(first, last, code = code)
-BapProgram  = lambda program_filename: Program(program_filename, BapParser)
-BapPath     = lambda first, last, program_code: Path(first, last, code = program_code)
+try:
 
-from PathGenerator import *
+    sys.path.append("z3py/build/")
+    import z3
 
+except:
+    sys.exit("You should run bootstrap.sh to download and compile z3 support")
 
+def mkArray(name):
+    return z3.Array(name, z3.BitVecSort(16), z3.BitVecSort(8))
+
+def mkByteList(op):
+    locs = op.getLocations()
+
+    if (len(locs) > 1):
+        return map(lambda b: z3.BitVec(str(b),8), locs)
+    else:
+        return [z3.BitVec(str(locs[0]),8)]
+
+"""
+def mkByteListVar(op):
+    locs = op.getLocations()
+
+    if (len(locs) > 1):
+        return (map(lambda b: z3.BitVec(str(b),8), locs))
+    else:
+        return [z3.BitVec(str(locs[0]),8)]
+"""
+
+def mkByteVar(op):
+    locs = op.getLocations()
+
+    if (len(locs) > 1):
+        return z3.Concat(map(lambda b: z3.BitVec(str(b),8), locs))
+    else:
+        return z3.BitVec(str(locs[0]),8)
+
+"""
+def mkByteListConst(imm):
+    locs = imm.getLocations()
+
+    if (len(locs) > 1):
+        return (map(lambda b: z3.BitVecVal(str(b),8), locs))
+    else:
+        return [ z3.BitVecVal(str(locs[0]),8)]
+"""
+
+def mkConst(imm):
+    return z3.BitVecVal(imm.getValue(),imm.size)
+
+Extract = z3.Extract
+RShift  = z3.LShR
+If      = z3.If
+BTrue   = z3.BitVecVal(1,1)
+BFalse  = z3.BitVecVal(0,1)

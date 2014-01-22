@@ -61,12 +61,7 @@ class Operand:
     """ Change the size of an operand"""
 
     self.size_in_bits = size_in_bits.get(str(new_size), 0)
-    
-    if (self.size_in_bits % 8 == 0):
-      self.size_in_bytes = self.size_in_bits / 8
-    else:
-      self.size_in_bytes = () # bottom
-
+    self.size_in_bytes = max(1,self.size_in_bits / 8)
     self.size = self.size_in_bits
   
   def getName(self):
@@ -170,7 +165,8 @@ class ImmOp(Operand):
     return False
       
   def __str__(self):
-    fmt = "0x%0."+str(2*self.size_in_bytes)+"x"
+    size_in_bytes = max(1,self.size_in_bytes)
+    fmt = "0x%0."+str(2*size_in_bytes)+"x"
     #print fmt
     if ("0x" in self.name):   
       return "imm:"+(fmt % (int(self.name,16)))
@@ -334,6 +330,24 @@ class InputOp(Operand):
   def getValue(self):
     assert(self.value <> None)
     return self.value
+
+
+
+class UndefinedOp(Operand):
+  """ A operand with an undefined value"""
+
+  def __str__(self):
+    return str("Undefined")
+
+  def isVar(self):
+    return True
+
+  def isMem(self):
+    return True
+
+  def getValue(self):
+    print "Unfined operand cannot have any value"
+    assert(0)
 
 # taken from http://code.activestate.com/recipes/384122/
 # definition of an Infix operator class

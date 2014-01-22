@@ -19,7 +19,7 @@
 
 from core        import *
 
-from SSA         import SSA
+#from SSA         import SSA
 from Function    import *
 from Condition   import *
 from SMT         import SMT, Solution
@@ -44,7 +44,7 @@ def getValueFromCode(inss, callstack, initial_values, memory, op, debug = False)
   #counter = len(inss)-1
   
   # ssa and smt objects
-  ssa = SSA()
+  ssa = None #SSA()
   smt_conds  = SMT()
   
   mvars = set()

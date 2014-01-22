@@ -31,6 +31,8 @@ from copy    import copy
 class Instruction:
   """An abstract instruction class"""
 
+  exp = None
+
   def __init__(self, raw_ins):
     """Creates a new instruction from raw data"""
     pass
@@ -54,6 +56,26 @@ class Instruction:
   def setCounter(self, counter):
     """Sets the instructions counter in a path"""
     self.counter = counter
+
+  def setVarMap(self, d):
+    self.var_map = d
+
+  def __renameReadOperand__(self, op):
+
+    if not (str(op) in self.var_map):
+      self.var_map[str(op)] = -1
+
+    self.var_map[str(op)] = self.var_map[str(op)] + 1
+    op_ren = op.copy()
+    op_ren.name = str(op)+"_"+str(self.var_map[str(op)])
+    return op_ren
+
+  def __renameWriteOperand__(self, op):
+
+    op_ren = op.copy()
+    op_ren.name = str(op)+"_"+str(self.var_map[str(op)])
+
+    return op_ren
 
   def getOperands(self):
     """Returns the list of all operands"""
@@ -94,12 +116,13 @@ class Instruction:
     return self.mem_reg 
   
   def isReadWrite(self):
-    """Returns if the instruction is reading or writting the memory"""
-    return self.mem_reg <> None  
+    """Returns if the instruction is reading or writing the memory"""
+    return self.mem_reg <> None
   
   def isCall(self):
     """Returns if the instruction is a call"""
     pass
+
   def isRet(self):
     """Returns if the instruction is a ret"""
     pass
@@ -112,7 +135,18 @@ class Instruction:
     """Returns if the instruction is a conditional jmp"""
     pass
 
+  def getCond(self):
+    """Returns the conditions, using the dictionary md to replace variables"""
+    pass
+
   def copy(self):
     """Returns a copy of current instance of Instruction"""
     return copy(self)
+
+  def __str__(self):
+
+    if self.isJmp() or self.isCJmp():
+        return "jmp to: "+" ".join(map(str, self.branchs))
+    else:
+      return " ".join(map(str, self.getWriteOperands()))+ " := "+ str (self.exp)
 

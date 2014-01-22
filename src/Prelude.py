@@ -26,7 +26,7 @@ from Allocation  import Allocation
 from Lifting     import *
 
 
-def mkTrace(path, raw_inputs, debug = False):
+def mkTrace(path, raw_inputs, debug = True):
     
     if debug:
       print "Loading trace.."
@@ -42,8 +42,9 @@ def mkTrace(path, raw_inputs, debug = False):
       print "Detecting callstack layout..."
     callstack = Callstack(path)#, Inputs) #TODO: it should recieve inputs also!
     
-    if debug:
-      print callstack
+    #if debug:
+    print callstack
+    assert(0)
     
     allocationLog = Allocation()
     memAccess = MemAccess()

@@ -28,16 +28,7 @@
 from json import *
 from Operand import *
 from Instruction import *
-
-class BinOp:
-  def __init__(self, name, op1, op2):
-    self.name = name
-    self.op1 = op1
-    self.op2 = op2
-  
-  def __str__(self):
-    return str(self.name)+"("+str(self.op1)+","+str(self.op2)+")"
-
+from BapExpression import *
 
 class BapInstruction(Instruction):
   
@@ -56,16 +47,29 @@ class BapInstruction(Instruction):
     op1  = self.__getExp__(d["lexp"])
     op2  = self.__getExp__(d["rexp"])
     
-    return BinOp(name, op1, op2)
-  
+    return BinExp(name, op1, op2)
+
+  def __getUnOp__(self, d):
+
+    name = d["unop_type"]
+    op  = self.__getExp__(d["exp"])
+
+    return UnExp(name, op)
+
   def __getStore__(self, d):
     address = self.__getExp__(d['address'])
     value = self.__getExp__(d['value'])
+    return address,value
  
-    print address, "->", value
-    endian = d['endian']
-    assert(0)
+    #print address, "->", value
+    #endian = d['endian']
+    #assert(0)
 
+  def __getCast__(self, d):
+    #if 'type'
+    #print d['type']
+    #assert(0)
+    return UnExp(d['cast_type']+":"+str(d['new_type']["reg"]), self.__getExp__(d['exp']))
 
   def __getExp__(self, d):
     
@@ -75,8 +79,13 @@ class BapInstruction(Instruction):
       return self.__getInt__(d['inte'])
     elif 'binop' in d:
       return self.__getBinOp__(d['binop'])
-    elif 'store' in d:
-      return self.__getStore__(d['store'])
+    elif 'unop' in d:
+      return self.__getUnOp__(d['unop'])
+    elif 'cast' in d:
+      return self.__getCast__(d['cast'])
+    elif 'unknown' in d:
+       return SingleExp(UndefinedOp("", 1))
+    #  return self.__getStore__(d['store'])
     else:
       #pass
       print "exp:"
@@ -84,30 +93,32 @@ class BapInstruction(Instruction):
       assert(0)
   
   def __getInt__(self, d):
-    return int(d['int'])
+
+    size = d['typ']["reg"]
+    return SingleExp(ImmOp(d['int'], size))
 
   def __getVar__(self, d):
     
     if ('reg' in d['typ']):
-      return RegOp(d['name'], d['typ'])
+      return SingleExp(RegOp(d['name'], d['typ']['reg']))
     else:
       #pass
       print d['name'], d['typ']
       assert(False)
 
   def __getLoad__(self, d):
-    return self.__getInt__(d['address']['inte'])
+    return self.__getExp__(d['address'])
 
   def __getBranch__(self, d):
     size = "DWORD"
     if 'inte' in d:
-      name = hex(self.__getInt__(d['inte']))
+      name = hex(self.__getInt__(d['inte']).getOp().getValue())
       return AddrOp(name, size)
     elif 'lab' in d:
       name = d['lab']
       return AddrOp(name, size)
     elif 'load' in d:
-      name = hex(self.__getLoad__(d['load']))
+      name = hex(self.__getLoad__(d['load']).getOp().getValue())
       return pAddrOp(name, size)
     elif 'var' in d:
       return self.__getVar__(d['var'])
@@ -120,12 +131,9 @@ class BapInstruction(Instruction):
     self.read_operands = []
     self.write_operands = []
     self.branchs = []
-    # self.address = pins.address
-    # self.instruction = pins.instruction
-    # self.operands = []
     
     # # for memory instructions
-    # self.mem_reg = None
+    self.mem_reg = None
     
     # # for call instructions
     self.called_function = None
@@ -133,7 +141,11 @@ class BapInstruction(Instruction):
     self.raw = str(dins)
     self.isCallV = False
     self.isRetV  = False
+
+    self.var = None
     #self.isJmp = False
+
+    #print self.raw
     
     if ('label_stmt' in dins):
       assert(False)
@@ -141,13 +153,25 @@ class BapInstruction(Instruction):
         #pass
         self.instruction = 'move'
         
-        print "moving to:", self.__getVar__(dins['move']['var']) 
-        
-        exp = self.__getExp__(dins['move']['exp'])
-        
-        self.read_operands = [exp]
-        
-        self.write_operands = [self.__getVar__(dins['move']['var'])]
+        #print "moving to:", self.__getVar__(dins['move']['var'])
+        if  'store' in dins['move']['exp']:
+          address, value = self.__getStore__(dins['move']['exp']['store'])
+
+          self.exp = value
+          self.read_operands = map(lambda v: v.getOp(), flatten(value))
+          self.write_operands = []
+          self.mem_reg = address
+        elif 'load' in dins['move']['exp']:
+          self.read_operands = []
+          self.write_operands = map(lambda v: v.getOp(), flatten(self.__getVar__(dins['move']['var'])))
+          address = self.__getLoad__(dins['move']['exp']['load'])
+          self.mem_reg = address
+
+        else:
+          self.var = self.__getVar__(dins['move']['var'])
+          self.exp = self.__getExp__(dins['move']['exp'])
+          self.read_operands  = map(lambda v: v.getOp(), flatten(self.exp))
+          self.write_operands = map(lambda v: v.getOp(), flatten(self.var))
         
         #print self.write_operands[0], "=", self.read_operands[0]
         #var = dins['move']['var']
@@ -165,8 +189,8 @@ class BapInstruction(Instruction):
         #print 'jmp:', dins['jmp']
     elif ('cjmp' in dins):
         self.instruction = 'cjmp'
-        #self.isJmp = True
         self.__readAttributes__(dins['cjmp'])
+        self.exp =  self.__getExp__(dins['cjmp']['cond'])
         
         if 'iftrue' in dins['cjmp']:
           d = dins['cjmp']['iftrue']
@@ -180,7 +204,9 @@ class BapInstruction(Instruction):
     else:
         self.instruction = "xxx"
         #assert(False)
-        
+
+    #print "read operands:", map(str, self.getReadOperands())
+    #print "write operands", map(str, self.getWriteOperands())
         
   def isCall(self):
     return self.isCallV
@@ -192,11 +218,48 @@ class BapInstruction(Instruction):
     
   def isCJmp(self):
     return self.instruction == "cjmp"
+
+  def getCond(self):
+
+    md = dict()
+    read_ops = self.getReadVarOperands()
+
+    for op in read_ops:
+      md[str(op)] = self.__renameReadOperand__(op)
+
+    if self.isJmp():
+      return [] # true
+    elif self.isCJmp():
+      #print "exp:", self.exp
+      return [self.exp.getCond(md)]
+    else:
+      #if (self.exp is None):
+      #  return []
+      #elif UndefinedOp("",1) in self.getOperands():
+      #  return []
+      #else:
+        #if self.var <> None:
+      for (x,y) in md.items():
+          print x,str(y)
+
+      exp_cond = self.exp.getCond(md)
+      write_op = self.getReadVarOperands()[0]
+      md[str(write_op)] = self.__renameWriteOperand__(write_op)
+
+      for (x,y) in md.items():
+          print x,str(y)
+
+      var_cond = self.var.getCond(md)
+      return [exp_cond == var_cond]
+      #  else:
+      #    return []
+
     
 
 def BapParser(filename):
     openf = open(filename)
     size = "DWORD" #size of address
+    last_addr = None
     r = []
     
     for dins in load(openf):
@@ -204,11 +267,17 @@ def BapParser(filename):
         if 'label' in dins['label_stmt']:
           label = dins['label_stmt']['label']
           if 'name' in label:
-            r.append(AddrOp(label['name'], size))
+            x = label['name'].replace("pc_", "")
+            last_addr = AddrOp(x, size)
+            r.append(last_addr)
           else:
-            r.append(AddrOp(hex(int(label['addr'])), size))
+            last_addr = AddrOp(hex(int(label['addr'])), size)
+            r.append(last_addr)
       else:
-        r.append(BapInstruction(dins))
+        ins = BapInstruction(dins)
+        ins.address = last_addr.copy()
+        r.append(ins)
+        #assert(0)
         
     return r
     
