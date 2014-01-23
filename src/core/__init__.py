@@ -36,7 +36,7 @@ from BapInstruction        import BapParser#, BapInstruction
 ReilProgram = lambda trace_filename: Program(trace_filename,ReilParser) 
 ReilPath    = lambda trace_filename,first,last: Path(first, last, filename = trace_filename, parser = ReilParser)
 AbsPath     = lambda first, last,code: Path(first, last, code = code)
-BapProgram  = lambda program_filename: Program(program_filename, BapParser)
+BapProgram  = lambda program_filename, binary: Program(program_filename, binary, BapParser)
 BapPath     = lambda first, last, program_code: Path(first, last, code = program_code)
 
 from PathGenerator import *

@@ -25,14 +25,16 @@
    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-from Operand  import * 
+from Operand  import *
+from ELF    import ELF
 from Instruction import Instruction
 
 class Program:
-    def __init__(self, filename, parser):
+    def __init__(self, filename, binary, parser):
         
         self.filename = filename
         self.parser   = parser
+        self.binary    = ELF(binary)
         self.current  = 0
         
         self.labels   = dict()
@@ -83,7 +85,7 @@ class Program:
         self.callstack.append(self.current)
         self.current = self.labels[str(taken)]
       else:
-	assert(False)
+        assert(False)
         
     def selectTrueBranch(self):
         #ins = self.code[self.current-1]
@@ -141,60 +143,68 @@ class Program:
     def next(self):
 
       if (self.current == None):
-	raise BranchUnselected
-    
+        print "Branch Unselected"
+        assert(0)
+
       if self.current >= self.len:
         raise StopIteration
       else:
-	
-	(addr, ins) = (self.current, self.code[self.current])
-	
-	if (ins.isCJmp()):
-	  self.current = None
-	  self.prev_ins = ins
-	elif (ins.isJmp()):
-	  if (ins.isCall()):
-	      self.prev_ins = None
-	      self.current = self.current + 1
-	      #pass # fixme
-	  elif (ins.isRet()):
-	    # next instruction is on the return address
-	    
-	    if self.callstack <> []:
-	      self.current = self.callstack.pop()
-	    else:
-	      raise StopIteration
-	    
-	    return self.next()
-	  else:
-	    # next instruction is the only possible branch
-	    
-	    taken = ins.branchs[0]
-	    
-	    if not (taken |iss| AddrOp):
+        (addr, ins) = (self.current, self.code[self.current])
+
+        if (ins.isCJmp()):
+          self.current = None
+          self.prev_ins = ins
+        elif (ins.isJmp()):
+          if (ins.isCall()):
+            #print s
+            #assert(0)
+
+            fname = self.binary.FindAddrInPlt(ins.branchs[0])
+
+            if not (fname is None):
+              ins.setCalledFunction(fname)
+
+            self.prev_ins = None
+            self.current = self.current + 1
+            #pass # fixme
+          elif (ins.isRet()):
+            # next instruction is on the return address
+
+            if self.callstack <> []:
+              self.current = self.callstack.pop()
+            else:
+              raise StopIteration
+
+            return self.next()
+          else:
+            # next instruction is the only possible branch
+
+            taken = ins.branchs[0]
+
+            if not (taken |iss| AddrOp):
               print "Impossible to follow jmp"
               assert(False)
 	    
-	    self.current = self.labels[str(taken)]
-	else:
-	  # next instruction is the following 
-	  self.current = self.current + 1
-	
-	return ins.copy()
+            self.current = self.labels[str(taken)]
+        else:
+          # next instruction is the following
+          self.current = self.current + 1
+
+      return ins.copy()
         
     def reset(self, start = None):
       if (start <> None):
         self.current = self.labels[str(start)]
       else:
-	self.current = 0
+        self.current = 0
       
       self.prev_ins = None
       self.callstack = []
       
-        
+
     def __getitem__(self, i):
         
         if (type(i) == slice):
-          raise NoSlice
+          raise IndexError
         else:
           return self.code[i]

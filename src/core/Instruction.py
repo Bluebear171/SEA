@@ -48,6 +48,9 @@ class Instruction:
   def getBranchTaken(self):
     """Get the branch taken in a jmp instruction"""  
     pass
+
+  def setCalledFunction(self, fname):
+    self.called_function = str(fname)
  
   def getCounter(self):
     """Returns the counter set by an instruction path"""
@@ -60,7 +63,7 @@ class Instruction:
   def setVarMap(self, d):
     self.var_map = d
 
-  def __renameReadOperand__(self, op):
+  def __renameWriteOperand__(self, op):
 
     if not (str(op) in self.var_map):
       self.var_map[str(op)] = -1
@@ -70,7 +73,10 @@ class Instruction:
     op_ren.name = str(op)+"_"+str(self.var_map[str(op)])
     return op_ren
 
-  def __renameWriteOperand__(self, op):
+  def __renameReadOperand__(self, op):
+
+    if not (str(op) in self.var_map):
+      self.var_map[str(op)] = 0
 
     op_ren = op.copy()
     op_ren.name = str(op)+"_"+str(self.var_map[str(op)])

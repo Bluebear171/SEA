@@ -64,7 +64,9 @@ class SMT:
       if (len(var) > 1):
         return z3.simplify(z3.Concat(var)).as_signed_long()
       else:
-        return z3.simplify(var[0]).as_signed_long()
+        x = z3.simplify(var[0]).as_signed_long()
+        print x
+        return x
     elif (op.isMem()):
       array = z3.Array(op.name, z3.BitVecSort(16), z3.BitVecSort(8))
       f = self.m[array]

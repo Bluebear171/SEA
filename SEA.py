@@ -29,8 +29,11 @@ from src.PathGeneration     import generatePaths
 from src.Lifting            import mkPath, mkProgram
 
 parser = argparse.ArgumentParser(description='Symbolic Exploit Assistant.')
-parser.add_argument('trace_filename', metavar='trace', type=str,
-                    help='a sequence of REIL instruction in a trace')
+parser.add_argument('program', metavar='trace', type=str,
+                    help='')
+
+parser.add_argument('binary', metavar='binary', type=str,
+                    help='')
 
 parser.add_argument('-first', dest='first', action='store', type=str,
                    default=str(0), help='first instruction to process')
@@ -105,7 +108,7 @@ args = parser.parse_args()
 #
 # elif (mode == 'generation'):
 
-program = mkProgram(args.trace_filename)
+program = mkProgram(args.program, args.binary)
 generatePaths(program,args.first, args.last, 2000)
     
 

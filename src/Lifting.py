@@ -26,11 +26,11 @@ def mkPath(pathf, first, last):
     print "I don't know how to read "+pathf+"."
     assert(0)
 
-def mkProgram(pathf):
+def mkProgram(pathf, program):
   if (".reil" in pathf):
      return ReilProgram(pathf)
   elif (".json" in pathf):
-    return BapProgram(pathf)
+    return BapProgram(pathf, program)
   else:
     print "I don't know how to lift "+pathf+"."
     assert(0)

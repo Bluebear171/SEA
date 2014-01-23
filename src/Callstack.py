@@ -71,19 +71,19 @@ def getValueFromCode(inss, initial_values, op):
 
       #mvars = set(filter(lambda o: o.name <> "ebp", mvars))
       conds = ins.getCond()
-      print conds
+      #print conds
    
       smt_conds.add(conds)
       
-  for iop in initial_values.keys():
-    if not (iop in ssa):
-      del initial_values[iop]
+  #for iop in initial_values.keys():
+  #  if not (iop in ssa):
+  #    del initial_values[iop]
     
-  ssa_map = ssa.getMap(set(), set(), set(initial_values.keys()))
-  eq = Eq(None, None)
+  #ssa_map = ssa.getMap(set(), set(), set(initial_values.keys()))
+  #eq = Eq(None, None)
     
-  for iop in initial_values:
-    smt_conds.add(eq.getEq(ssa_map[iop.name],initial_values[iop]))
+  #for iop in initial_values:
+  #  smt_conds.add(eq.getEq(ssa_map[iop.name],initial_values[iop]))
     
   #op.name = op.name+"_0"
   smt_conds.solve()
@@ -114,6 +114,7 @@ class Callstack:
   
     for (end,ins) in enumerate(self.code):
       if (ins.isCall() and ins.called_function == None) or ins.isRet():
+        print str(ins), "is call!"
         self.__getStackDiff__(ins, code[start:end])
         start = end
         
@@ -202,7 +203,7 @@ class Callstack:
   
   def __getStackDiff__(self, ins, reil_code):
     addr = ins.address.getValue()
-    if ins.isCall():
+    if ins.isCall() or reil_code.current == 0:
       call = addr
       esp_diff = self.__getESPdifference__(reil_code, 0) 
         
