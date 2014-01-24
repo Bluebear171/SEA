@@ -150,9 +150,10 @@ class Instruction:
     return copy(self)
 
   def __str__(self):
+    r = ""
 
     if self.isJmp() or self.isCJmp():
-        return "jmp to: "+" ".join(map(str, self.branchs))
+        r = r + "jmp to: "+" ".join(map(str, self.branchs))
     else:
       return " ".join(map(str, self.getWriteOperands()))+ " := "+ str (self.exp)
 

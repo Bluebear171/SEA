@@ -112,11 +112,11 @@ class Callstack:
     code_size = len(code)
     start = 0  
   
-    for (end,ins) in enumerate(self.code):
-      if (ins.isCall() and ins.called_function == None) or ins.isRet():
-        print str(ins), "is call!"
-        self.__getStackDiff__(ins, code[start:end])
-        start = end
+    #for (end,ins) in enumerate(self.code):
+    #  if (ins.isCall() and ins.called_function == None) or ins.isRet():
+    #    print str(ins), "is call!"
+    #    self.__getStackDiff__(ins, code[start:end])
+    #    start = end
         
     if (start <> code_size-1):
       ins = code[start]

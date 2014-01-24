@@ -202,8 +202,9 @@ class BapInstruction(Instruction):
                   
          
     else:
-        self.instruction = "xxx"
-        #assert(False)
+        #self.instruction = "xxx"
+        print dins
+        assert(False)
 
     #print "read operands:", map(str, self.getReadOperands())
     #print "write operands", map(str, self.getWriteOperands())
