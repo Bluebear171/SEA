@@ -17,22 +17,30 @@
     Copyright 2013 by neuromancer
 """
 
+import os
+import subprocess
+
 from src.core import *
 
-def mkPath(pathf, first, last):
-  if (".reil" in pathf):
-    return ReilPath(pathf, first, last)
-  else:
-    print "I don't know how to read "+pathf+"."
-    assert(0)
+realpath  =  os.path.dirname(os.path.realpath(__file__))+"/.."
+binpath   = realpath + "/bin"
+cachepath = realpath + "/cache"
 
-def mkProgram(pathf, program):
-  if (".reil" in pathf):
-     return ReilProgram(pathf)
-  elif (".json" in pathf):
-    return BapProgram(pathf, program)
-  else:
-    print "I don't know how to lift "+pathf+"."
-    assert(0)
+def check(f):
+  if not (os.access(f, os.X_OK) and os.path.isfile(f)):
+    print 'Executable %s needed for readelf.py, please install binutils' % f
+    exit(-1)
+
+def lift(binary, ir, addr):
+
+  if (ir == "bap"):
+    converter = binpath + "/toil"
+    cmd = converter  +" -binrecurseat "+ binary + " " + addr + " -tojson"
+    outfile = cachepath + "/" + str(hash(cmd)) + ".json"
+    cmd =  cmd + " -o " + outfile
+    retcode = os.system(cmd)
+
+    if retcode == 0:
+      return BapProgram(outfile, binary)
 
 

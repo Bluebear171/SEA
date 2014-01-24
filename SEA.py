@@ -26,29 +26,37 @@ from src.Prelude            import mkTrace
 from src.Common             import getPathConditions
 from src.JumpConditions     import getJumpConditions
 from src.PathGeneration     import generatePaths
-from src.Lifting            import mkPath, mkProgram
+from src.Lifting            import lift
 
 parser = argparse.ArgumentParser(description='Symbolic Exploit Assistant.')
-parser.add_argument('program', metavar='trace', type=str,
+#parser.add_argument('program', metavar='trace', type=str,
+#                    help='')
+
+parser.add_argument('binary', metavar='binary_file', type=str,
+                    help='Binary to analyze')
+
+
+parser.add_argument('first', metavar='addr', type=str,
+                    help='First instruction to disassemble')
+
+
+parser.add_argument('-ir', dest='ir', action='store', type=str, default="bap",
                     help='')
 
-parser.add_argument('binary', metavar='binary', type=str,
-                    help='')
-
-parser.add_argument('-first', dest='first', action='store', type=str,
-                   default=str(0), help='first instruction to process')
+#parser.add_argument('-first', dest='first', action='store', type=str,
+#                   default=str(0), help='first instruction to process')
 
 parser.add_argument('-last', dest='last', action='store', type=str,
-                   default=str(sys.maxint-1), help='last instruction to process')
-
-parser.add_argument('-type', dest='type', action='store', type=str,
-                   default="debug", help='exploit type')
-
-parser.add_argument('-address', dest='address', action='store', type=str,
-                   default=None, help='which address to jump in jump mode')
-
-parser.add_argument('iconditions', metavar='operator,value', type=str, nargs='*',
-                   help='initial conditions for the trace')
+                   default=str(sys.maxint-1), help='Last instruction to disassemble')
+#
+# parser.add_argument('-type', dest='type', action='store', type=str,
+#                    default="debug", help='exploit type')
+#
+# parser.add_argument('-address', dest='address', action='store', type=str,
+#                    default=None, help='which address to jump in jump mode')
+#
+# parser.add_argument('iconditions', metavar='operator,value', type=str, nargs='*',
+#                    help='initial conditions for the trace')
 
 args = parser.parse_args()
 
@@ -108,7 +116,7 @@ args = parser.parse_args()
 #
 # elif (mode == 'generation'):
 
-program = mkProgram(args.program, args.binary)
+program = lift(args.binary, args.ir, args.first)
 generatePaths(program,args.first, args.last, 2000)
     
 
