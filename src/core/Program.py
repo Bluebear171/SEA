@@ -173,7 +173,9 @@ class Program:
             if self.callstack <> []:
               self.current = self.callstack.pop()
             else:
-              raise StopIteration
+              self.current = self.len+1
+              return ins.copy()
+              #following call to next will trigger StopIteration
 
             return self.next()
           else:

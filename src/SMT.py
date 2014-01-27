@@ -30,7 +30,7 @@ class SMT:
   def add(self, cs):
     for c in cs:
       c = z3.simplify(c)
-      print c
+      #print c
       #if (self.c <= self.max_c):
       #self.solver.assert_and_track(c, str(c))
       self.solver.add(c)
@@ -38,6 +38,8 @@ class SMT:
       #self.c = self.c + 1
 
   def solve(self, debug = False):
+
+    print self.solver
 
     #if debug:
     #  print self.solver

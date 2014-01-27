@@ -54,8 +54,11 @@ def getValueFromCode(inss, initial_values, op):
       print v,
     print ""
 
+    print  str(ins)
 
-    if len(ins_write_vars.intersection(mvars)) > 0: 
+
+    if len(ins_write_vars.intersection(mvars)) > 0:
+      print "enter"
       
       #ssa_map = ssa.getMap(ins_read_vars.difference(mvars), ins_write_vars, ins_read_vars.intersection(mvars))
 
@@ -69,7 +72,7 @@ def getValueFromCode(inss, initial_values, op):
       mvars = mvars.difference(ins_write_vars) 
       mvars = ins_read_vars.union(mvars)
 
-      #mvars = set(filter(lambda o: o.name <> "ebp", mvars))
+      mvars = set(filter(lambda o: o.name <> "R_EBP", mvars))
       conds = ins.getCond()
       #print conds
    
@@ -112,11 +115,11 @@ class Callstack:
     code_size = len(code)
     start = 0  
   
-    #for (end,ins) in enumerate(self.code):
-    #  if (ins.isCall() and ins.called_function == None) or ins.isRet():
-    #    print str(ins), "is call!"
-    #    self.__getStackDiff__(ins, code[start:end])
-    #    start = end
+    for (end,ins) in enumerate(self.code):
+      if (ins.isCall() and ins.called_function == None) or ins.isRet():
+        print str(ins), "is call!"
+        self.__getStackDiff__(ins, code[start:end])
+        start = end
         
     if (start <> code_size-1):
       ins = code[start]

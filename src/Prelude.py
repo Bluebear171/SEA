@@ -44,7 +44,7 @@ def mkTrace(path, raw_inputs, debug = True):
     
     #if debug:
     print callstack
-    assert(0)
+    #assert(0)
     
     allocationLog = Allocation()
     memAccess = MemAccess()

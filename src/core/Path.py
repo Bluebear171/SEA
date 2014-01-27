@@ -41,6 +41,10 @@ class Path:
     elif (code <> None):
       self.init_type = "code"
       self.code = list(code)
+      #print "Check ins"
+      #for ins in self.code:
+      #    print str(ins), map(str, ins.getReadOperands())
+      #print "----"
         
     self.code = filter(lambda i: i |iss| Instruction, self.code)
     self.first = first
@@ -108,6 +112,7 @@ class Path:
 
     for ins in self.code:
       ins.setVarMap(self.var_map)
+      #print ins
 
     if (self.is_reversed):
       self.current = self.last

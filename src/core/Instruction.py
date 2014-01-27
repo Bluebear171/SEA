@@ -153,7 +153,16 @@ class Instruction:
     r = ""
 
     if self.isJmp() or self.isCJmp():
-        r = r + "jmp to: "+" ".join(map(str, self.branchs))
+
+        if self.isCall():
+          r = "call to: "+" ".join(map(str, self.branchs))
+          if self.called_function <> None:
+            r = r + " (" +self.called_function+ ")"
+        elif self.isRet():
+          r = "ret to: "+" ".join(map(str, self.branchs))
+        else:
+          r = "jmp to: "+" ".join(map(str, self.branchs))
     else:
-      return " ".join(map(str, self.getWriteOperands()))+ " := "+ str (self.exp)
+      r = " ".join(map(str, self.getWriteOperands()))+ " := "+ str (self.exp)
+    return r
 

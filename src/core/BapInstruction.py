@@ -222,6 +222,13 @@ class BapInstruction(Instruction):
 
   def getCond(self):
 
+    print "getCond"
+    for op in self.read_operands:
+      print op,
+    print "\n",
+    for op in self.write_operands:
+      print op,
+
     md = dict()
     read_ops = self.getReadVarOperands()
 
@@ -240,15 +247,15 @@ class BapInstruction(Instruction):
       #  return []
       #else:
         #if self.var <> None:
-      for (x,y) in md.items():
-          print x,str(y)
+      #for (x,y) in md.items():
+      #    print x,str(y)
 
       exp_cond = self.exp.getCond(md)
       write_op = self.getReadVarOperands()[0]
       md[str(write_op)] = self.__renameWriteOperand__(write_op)
 
-      for (x,y) in md.items():
-          print x,str(y)
+      #for (x,y) in md.items():
+      #    print x,str(y)
 
       var_cond = self.var.getCond(md)
       return [exp_cond == var_cond]
