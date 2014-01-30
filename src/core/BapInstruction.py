@@ -262,6 +262,16 @@ class BapInstruction(Instruction):
       #  else:
       #    return []
 
+  def getMemReg(self):
+    ops =  filter(lambda v: v.isVar(), map(lambda v: v.getOp(), flatten(self.mem_reg)))
+    return ops[0]
+
+    for op in ops:
+      print op
+
+    assert(0)
+
+
     
 
 def BapParser(filename):
@@ -286,6 +296,7 @@ def BapParser(filename):
         ins.address = last_addr.copy()
         r.append(ins)
         #assert(0)
-        
-    return r
-    
+
+    call_ins = BapInstruction(dict(jmp=dict(attributes=[dict(strattr='call')])))
+    return r[0:2]+[call_ins]+r[3:]
+
