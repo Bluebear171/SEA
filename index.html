@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <title>SEA Web</title>
+        
+    <!--[if lt IE 9]-->
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js" type="text/javascript"></script>
+    <!--[endif]-->
+			
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    
+	<!-- Google Fonts-->
+	<link href='http://fonts.googleapis.com/css?family=Audiowide' rel='stylesheet' type='text/css'>
+	<link href='http://fonts.googleapis.com/css?family=Monda' rel='stylesheet' type='text/css'>
+		
+	<link href="css/estilo.css" rel="stylesheet"/>
+  
+  </head>
+  <body>
+  
+					<!-- navbar -->
+						<!-- nav class="navbar navbar-default navbar-collaps" role="navigation"-->
+						<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+							<div class="navbar-centrador">
+								<div class="navbar-header">
+									 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button> <a class="navbar-brand" href="index.html">SEA</a>
+								</div>
+								
+								<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+									<ul class="nav navbar-nav">
+										
+										<li>
+											<a href="index.html">about</a>
+										</li>
+										<li>
+											<a href="features.html">features</a>
+										</li>
+										<li>
+											<a href="">news</a>
+										</li>
+										<li>
+											<a href="">Link</a>
+										</li>
+									</ul>
+																
+								</div>
+							</div>							
+						</nav>
+				
+					<!-- ----- -->
+					
+			
+			
+			<div class="banner">
+				<div class="logo-github">
+					<img src="images/band.png" alt="fork">
+				</div>
+				<div class="logo-sea">
+					
+					
+					<h1>SYMBOLIC EXPLOIT ASSISTANT</h1>
+				</div>
+			</div>
+			
+			<div class="contenido">
+					<div class="contenido-centrador">
+							<div>
+							<p>
+								"Symbolic Exploit Assistant" ( SEA ) is a small tool designed to assist the discovery and construction of exploits in binary programs. SEA is free software (GPL3) and includes a minimal toolkit (BSD) to quickly develop binary analisys tools in Python.
+									<br>
+This project is developed in colaboration between the research institutes CIFASIS (Rosario, Argentina) and VERIMAG (Grenoble, France) in an effort to improve security in binary programs.
+							</p>
+							
+							</div>
+							
+							<hr style="height: 1px; border: none; background-color: #FFF; width: 100%; margin-top: 30px; margin-bottom: 30px;">
+							
+							<div>
+								<h2>Quick Start</h2>
+To get started, you should have Python 2.7 . To prepare the tool, the official Z3 Python binding (z3py) should be installed. Fortunately, just executing boostrap.sh will download and compile z3py.
+
+After it finishes compiling, SEA is ready to be used. You can test SEA analyzing the converted code of the first example of Gera's Insecure Programming:
+<br><code>./SEA.py tests/reil/stack1_gcc.reil</code><br>
+The complete analysis of this example can be found here. Another interesting example to test detection of memory use is:
+
+<br><code>./SEA.py tests/reil/uaf_1.reil</code><br>
+An explained analysis of it is here.
+							</div>
+							
+							
+					</div>
+			</div>
+			
+			
+			<!-- FOOTER -->
+			<div class="footer">
+				<div class="centrador-footer">
+					<div class="row clearfix">
+						<div class="col-md-4 column">
+							<p>
+								Documentation, examples and more can be found in the wiki. The issue tracker is available. Discusson for support or collaboration is available in #sea-tool @ irc.freenode.net
+							</p>
+						</div>
+						<div class="col-md-4 column">
+							<p>
+								<img src="images/coins.png" alt="coins"><span style="font-size:25px">SAVE US</span>
+							</p>
+							<p>
+								Lorem ipsum dolor sit amet, <strong>consectetur adipiscing elit</strong>. Aliquam eget sapien sapien. Curabitur in metus urna. In hac habitasse platea dictumst. Phasellus eu sem sapien, sed vestibulum velit. Nam purus nibh, lacinia non faucibus et, pharetra in dolor. Sed iaculis posuere diam ut cursus. <em>Morbi commodo sodales nisi id sodales. 
+							</p> <img src="images/donate.png" alt="donate">
+						</div>
+						<div class="col-md-4 column">
+							<ul>
+								<li>
+									Lorem ipsum dolor sit amet
+								</li>
+								<li>
+									Consectetur adipiscing elit
+								</li>
+								<li>
+									Integer molestie lorem at massa
+								</li>
+								<li>
+									Facilisis in pretium nisl aliquet
+								</li>
+								<li>
+									Nulla volutpat aliquam velit
+								</li>
+								<li>
+									Faucibus porta lacus fringilla vel
+								</li>
+								<li>
+									Aenean sit amet erat nunc
+								</li>
+								<li>
+									Eget porttitor lorem
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>	
+			</div>
+			
+			
+			
+			
+			
+			<!-- SCRIPTS -->
+			<!-- script src="https://code.jquery.com/jquery.js"></script-->
+			<script src="js/jquery-1.11.0/jquery-1.11.0.min.js"></script>
+			<script src="bootstrap/js/bootstrap.min.js"></script>
+			<script type="text/javascript" src="js/global.js"></script>			
+			<!-- FIN SCRIPTS -->
+  				 
+   
+  </body>
+</html>
+
